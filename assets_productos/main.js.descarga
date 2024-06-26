@@ -1,0 +1,116 @@
+/*1706521386000*/
+/*1706521386000*/
+$(document).ready(function() {
+    var target = $('.topbar');
+    var banner = $('#banner');
+    var backdrop = $('.header-backdrop');
+    var barBlack = $('.control-menu');
+    var administrator = barBlack.length == 1 ? true : false
+    var portletSubMenu = $('.sub-menu');
+    $('.main.center[role="main center"]').attr("id", "containerImgPortada");
+    var idContainerImg = document.getElementById("containerImgPortada");
+    var fil = $("#content a:not(.anchor)");
+    var enlaces = fil.filter("a:not([href])");
+    var visorContent = $("section .container .portlet-title-menu.portlet-topper-toolbar").parent();
+    visorContent.addClass("visorContenido");
+    var containerPortlets = $("#content .portlet-name-text:not(:contains('Aplicaciones anidadas'))").parent().parent();
+    var headerPortlets = containerPortlets.filter("header:not(.visorContenido)");
+    headerPortlets.addClass("portletPosition");
+    var containerPage = $('body.public-page');
+    $('a.anchor').addClass("redirectSubMenu");
+
+    function verifyBannerHidden() {
+        var height = $(window).scrollTop()
+        var tamanio = screen.width;
+        if (tamanio >= 769) {
+            if (height > 0) {
+                target.css('display', 'none');
+                banner.addClass('showingNav');
+                barBlack.css('display', 'none');
+                backdrop.css('position', 'absolute');
+                containerPage.removeClass("displacementZero");
+
+            } else {
+                target.css('display', 'block');
+                banner.removeClass('showingNav');
+                barBlack.css('display', 'block');
+                backdrop.css('position', 'fixed');
+                containerPage.addClass("displacementZero");
+            }
+        } else {
+            target.css('display', 'none');
+            banner.addClass('showingNav');
+        }
+    }
+
+    function fixedSeguros() {
+        window.addEventListener('scroll', function() {
+            var tamanio = screen.width;
+            var heightSubMenu = portletSubMenu.outerHeight();
+            var dimensiones = idContainerImg?.getBoundingClientRect() || {};
+            var positionPixelesSubMenu = ((dimensiones.bottom - 23) - heightSubMenu);
+            if (tamanio >= 480) {
+                if (Math.sign(positionPixelesSubMenu) == -1) {
+                    portletSubMenu.removeClass('affix-top');
+                    portletSubMenu.addClass('affix');
+                } else {
+                    portletSubMenu.removeClass('affix');
+                    portletSubMenu.addClass('affix-top');
+                }
+            } else {
+                portletSubMenu.removeClass('affix');
+                portletSubMenu.addClass('affix-top');
+            }
+        });
+    }
+
+    if (administrator) {
+        backdrop.addClass('backdrop-newTop');
+        backdrop.css('position', 'fixed');
+    } else {
+        backdrop.removeClass('backdrop-newTop');
+    }
+    if (portletSubMenu.length > 0) {
+        fixedSeguros()
+    }
+
+    // verificando la barra de canales de informacion cada vez que se cambia de dispositivo
+    $(window).resize(function() {
+        verifyBannerHidden()
+        fixedSeguros()
+    })
+
+    function verifiyScrollExcedent() {
+        var height = $(window).scrollTop();
+        var sizeWindowVisible = $(window).height();
+        var sizeDocumentAll = $(document).height();
+        var sizeWidowNotVisible = sizeDocumentAll - sizeWindowVisible
+        var sizeNavbarAndBannerChanels = target.innerHeight() + banner.innerHeight();
+
+        if (sizeWidowNotVisible > sizeNavbarAndBannerChanels || height > sizeNavbarAndBannerChanels) {
+            window.addEventListener('scroll', verifyBannerHidden);
+        }
+    }
+    
+    function verifyNewBoxComparator(){
+    	var itemsComparator = $(".comparador .item");
+    	itemsComparator.each(function(){
+    		 
+    		if($(this).has(".newBoxHeader").length > 0){
+    			$(this).addClass("border-20");
+    			//$(this).addClass("background-none");
+        	}
+    	});
+    	
+    }
+    //verifica si tiene la clase newBoxHeader, para que el border radius del layout tambien tenga el mismo radius que esa clase css
+    verifyNewBoxComparator();
+    //añadiendo clase para la posicion del submenu
+    var allParents = portletSubMenu.parents(".portlet-boundary");
+    var PortletContainer = $(allParents[0]);
+    PortletContainer.addClass("portletAbsolute");
+    PortletContainer.removeClass("portlet-nested-portlets");
+    PortletContainer.removeClass("portlet-boundary");
+    enlaces.prop("tabindex", "0");
+    verifiyScrollExcedent();
+});
